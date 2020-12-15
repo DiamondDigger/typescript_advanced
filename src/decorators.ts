@@ -110,4 +110,55 @@ const button = document.querySelector('#btn')!
 button.addEventListener('click', card.logName)
 button.addEventListener('click', card.logName2)
 
- 
+//--------------------->
+
+type ValidatorType = 'required' | 'email'
+
+interface ValidatorConfig {
+    [prop: string] : {                  // class name
+        [validateProp: string]: ValidatorType
+    }
+}
+
+const  validators: ValidatorConfig = {}
+
+function validate(obj: any): boolean {
+    const objConfig = validators[obj.constructor.name]  
+    if (!objConfig) {
+        return true
+    }
+    let isValid = true
+    Object.keys(objConfig).forEach(key => {
+       if (objConfig[key] === 'required') {
+            isValid = isValid && obj[key]
+            console.log(`obj[${key}]: `, obj[key] );
+       }
+    })
+    return isValid
+}
+
+function Required(target: any, propName: string){
+    validators[target.constructor.name] = {
+        ...validators[target.constructor.name],
+        [propName] : 'required'
+    }
+}
+
+class Form {
+    @Required
+    public email: string | void
+
+    constructor(email?: string) {
+        this.email = email
+    }
+}
+
+const form = new Form()
+
+console.log(form);
+
+if(validate(form)) {
+    console.log('Validate:', form);
+} else {
+    console.log('Validation error');
+}
